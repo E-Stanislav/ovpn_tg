@@ -13,16 +13,15 @@ DELETE_ID = 0
 
 from dotenv import load_dotenv
 
-# Загружаем переменные из .env
+# Load variables from .env
 dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
 load_dotenv(dotenv_path)
 
-# Токен бота
+# Tg tokens
 ADMIN_ID = json.loads(os.getenv("ADMIN_ID"))
 ADMIN_ID = {int(key): value for key, value in ADMIN_ID.items()}
 BOT_TOKEN = os.getenv("TOKEN")
 
-# Создаем бота
 bot = telebot.TeleBot(BOT_TOKEN)
 
 
@@ -30,17 +29,17 @@ bot = telebot.TeleBot(BOT_TOKEN)
 def start_message(message):
     bot.send_message(
         message.chat.id,
-        "🧾Привет! Здесь ты можешь создать новые протоколы VPN или удалить существующие",
+        "🧾Hello! Here you can create new VPN protocols or delete existing ones",
         reply_markup=main_keyboard(),
     )
 
 
-@bot.message_handler(content_types="text")  # Работа бота
+@bot.message_handler(content_types="text")  # Bot work
 def main(message):
     if message.text == "✅Создать VPN" and message.chat.id in ADMIN_ID.keys():
         bot.send_message(
             message.chat.id,
-            "Введи название файла",
+            "Enter VPN protocol name",
             reply_markup=back_keyboard(),
         )
         bot.register_next_step_handler(message, create_vpn)
@@ -49,8 +48,9 @@ def main(message):
 
         bot.send_message(
             message.chat.id,
-            f"Введи номер протокола,\nкоторый надо удалить:\n{list_vpns}",
+            f"Enter the protocol number\nto be <b>DELETED</b>:\n{list_vpns}",
             reply_markup=back_keyboard(),
+            parse_mode="html",
         )
         bot.register_next_step_handler(message, delete_protocol)
     elif message.text == "📝Получить VPN" and message.chat.id in ADMIN_ID.keys():
@@ -58,12 +58,12 @@ def main(message):
 
         bot.send_message(
             message.chat.id,
-            f"Введи номер протокола,\nкоторый хотите получить:\n{list_vpns}",
+            f"Enter the protocol number\nyou want to receive:\n{list_vpns}",
             reply_markup=back_keyboard(),
         )
         bot.register_next_step_handler(message, get_protocol)
     else:
-        bot.send_message(message.chat.id, "Нет доступа", reply_markup=main_keyboard())
+        bot.send_message(message.chat.id, "🚫Access denied", reply_markup=main_keyboard())
         bot.register_next_step_handler(message, main)
 
 
