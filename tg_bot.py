@@ -1,24 +1,17 @@
-import telebot
-from keyboard import (
-    main_keyboard,
-    back_keyboard,
-    delete_keyboard,
-)
 import json
-import time
-import subprocess
-from telebot.types import InputMediaPhoto
 import os
-from telebot import types
+import subprocess
+import time
+
+import telebot
+
+from keyboard import back_keyboard, delete_keyboard, main_keyboard
 
 global ADMIN_ID
 global DELETE_ID
-# ADMIN_ID = {528596693: "ef_stas"}  # ID админа
 DELETE_ID = 0
 
-# bot = telebot.AsyncTeleBot(token)
 from dotenv import load_dotenv
-from telebot import TeleBot
 
 # Загружаем переменные из .env
 dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
@@ -26,7 +19,7 @@ load_dotenv(dotenv_path)
 
 # Токен бота
 ADMIN_ID = json.loads(os.getenv("ADMIN_ID"))
-ADMIN_ID = {int(key):value for key, value in ADMIN_ID.items()}
+ADMIN_ID = {int(key): value for key, value in ADMIN_ID.items()}
 BOT_TOKEN = os.getenv("TOKEN")
 
 # Создаем бота
@@ -192,7 +185,7 @@ def remove_protocol(message):
                 # Первая команда
                 process.stdin.write("2\n".encode())
                 process.stdin.flush()
-                # 1/0
+
                 skip_menu(last_string=f"{max(dict_vpns.keys())})", process=process)
 
                 # Вторая команда
