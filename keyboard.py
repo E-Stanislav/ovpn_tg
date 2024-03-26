@@ -12,18 +12,18 @@ def main_keyboard():
     return markup_main
 
 def delete_keyboard():
-    markup_qiwi_back = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+    markup_delete = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
     button1 = "💀Удалить"
     button2 = "✅Не удалять"
     button3 = "Назад"
     button4 = "Главное меню"
-    markup_qiwi_back.row(button1, button2)
-    markup_qiwi_back.row(button3)
-    markup_qiwi_back.row(button4)
-    return markup_qiwi_back 
+    markup_delete.row(button1, button2)
+    markup_delete.row(button3)
+    markup_delete.row(button4)
+    return markup_delete 
 
 def back_keyboard():
-    markup_qiwi_back = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
+    markup_back = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
     button1 = "Назад"
-    markup_qiwi_back.row(button1)
-    return markup_qiwi_back
+    markup_back.row(button1)
+    return markup_back
