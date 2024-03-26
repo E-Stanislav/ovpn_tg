@@ -1,4 +1,3 @@
-import json
 from telebot import types
 
 def main_keyboard():
