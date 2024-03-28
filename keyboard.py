@@ -2,9 +2,9 @@ from telebot import types
 
 def main_keyboard():
     markup_main = types.ReplyKeyboardMarkup(one_time_keyboard=False, resize_keyboard=True)
-    button1 = "✅Создать VPN"
-    button2 = "📛Удалить VPN"
-    button3 = "📝Получить VPN"
+    button1 = "✅Create VPN"
+    button2 = "📛Remove VPN"
+    button3 = "📝Get VPN"
     markup_main.row(button1)
     markup_main.row(button2)
     markup_main.row(button3)
@@ -12,10 +12,10 @@ def main_keyboard():
 
 def delete_keyboard():
     markup_delete = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-    button1 = "💀Удалить"
-    button2 = "✅Не удалять"
-    button3 = "Назад"
-    button4 = "Главное меню"
+    button1 = "💀Delete"
+    button2 = "✅Don't delete"
+    button3 = "Back"
+    button4 = "Main menu"
     markup_delete.row(button1, button2)
     markup_delete.row(button3)
     markup_delete.row(button4)
@@ -23,6 +23,6 @@ def delete_keyboard():
 
 def back_keyboard():
     markup_back = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
-    button1 = "Назад"
+    button1 = "Back"
     markup_back.row(button1)
     return markup_back
