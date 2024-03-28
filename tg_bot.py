@@ -110,7 +110,7 @@ def create_vpn(message):
 
                 bot.register_next_step_handler(message, main)
             except Exception as e:
-                come_back(message=message, message_text=f"Возникла проблема при создании файла: {str(e)}")
+                come_back(message=message, message_text=f"There was a problem creating the file: {str(e)}")
         else:
             come_back(message=message, message_text="Invalid command")
 
