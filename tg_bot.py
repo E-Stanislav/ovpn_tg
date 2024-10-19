@@ -2,25 +2,18 @@ import json
 import os
 import subprocess
 import time
-import psutil
 
+import psutil
 import telebot
+from dotenv import load_dotenv
 
 from keyboard import back_keyboard, delete_keyboard, main_keyboard
 
-global ADMIN_ID
-global DELETE_ID
-DELETE_ID = 0
+# Load environment variables
+load_dotenv()
 
-from dotenv import load_dotenv
-
-# Load variables from .env
-dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
-load_dotenv(dotenv_path)
-
-# Tg tokens
-ADMIN_ID = json.loads(os.getenv("ADMIN_ID"))
-ADMIN_ID = {int(key): value for key, value in ADMIN_ID.items()}
+# Bot and Admin details
+ADMIN_ID = {int(key): value for key, value in json.loads(os.getenv("ADMIN_ID")).items()}
 BOT_TOKEN = os.getenv("TOKEN")
 VPN_FOLDER = os.getenv("VPN_FOLDER")
 
@@ -65,35 +58,17 @@ def main(message):
         )
         bot.register_next_step_handler(message, get_protocol)
     elif message.text == "💻System info" and message.chat.id in ADMIN_ID.keys():
-        bot.send_message(message.chat.id, "⌛Собирается информация о системе")
-        # Получаем информацию о памяти
-        used_memory = psutil.virtual_memory().used
-        # Получение информации о памяти
-        memory_info = psutil.virtual_memory().total
-        # Перевод в гигабайты
-        total_memory_gb = memory_info / (1024 ** 3)
-        # Загрузка процессора (в процентах) для всех vCPU
-        cpu_usage = psutil.cpu_percent(interval=1, percpu=True)
-        # Получаем информацию о всех дисковых разделах
-        disk_info = psutil.disk_partitions()[0]
-        # Получаем информацию об использовании диска
-        usage = psutil.disk_usage(disk_info.mountpoint)
+        bot.send_message(message.chat.id, "⌛Collecting system info...")
+        mem = psutil.virtual_memory()
+        cpu = psutil.cpu_percent(interval=1, percpu=True)
+        disk = psutil.disk_usage(psutil.disk_partitions()[0].mountpoint)
 
-        # Общий объем памяти
-        total = usage.total / (1024 ** 3)  # Конвертация в ГБ
-        # Использовано
-        used = usage.used / (1024 ** 3)  # Конвертация в ГБ
-        # Процент использования
-        percent = usage.percent
-        # Печатаем информацию
         summary = (
-            f"🧠Использовано ОЗУ: {used_memory / (1024 ** 3):.2f}/{total_memory_gb:.2f} GB\n"
-            f"🖥️Загрузка vCPU: {cpu_usage[0]}%\n"
-            f"💽Диск: {used:.2f}/{total:.2f} GB || {percent}%\n"
+            f"🧠 RAM: {mem.used / (1024 ** 3):.2f}/{mem.total / (1024 ** 3):.2f} GB\n"
+            f"🖥️ CPU: {cpu[0]}%\n"
+            f"💽 Disk: {disk.used / (1024 ** 3):.2f}/{disk.total / (1024 ** 3):.2f} GB ({disk.percent}%)"
         )
-
-
-        come_back(message=message, message_text=summary)
+        come_back(message, summary)
     else:
         come_back(message=message, message_text="🚫Access denied")
 
@@ -216,28 +191,17 @@ def remove_protocol(message):
 
 def get_protocol(message):
     if message.text == "Back":
-        come_back(message=message)
+        return come_back(message)
+
+    dict_vpns = get_dict_vpns()
+    vpn_file = dict_vpns.get(message.text)
+
+    if vpn_file:
+        with open(f"/root/{vpn_file}.ovpn", "rb") as caps:
+            bot.send_document(message.chat.id, document=caps, reply_markup=main_keyboard())
+        bot.register_next_step_handler(message, main)
     else:
-        if message.text:
-            dict_vpns = get_dict_vpns()
-            if str(message.text) not in dict_vpns.keys():
-                come_back(
-                    message=message,
-                    message_text=f"There isn't given number: {message.text},\nTotal {len(dict_vpns)} VPN files",
-                )
-
-            else:
-                with open(rf"/root/{dict_vpns[message.text]}.ovpn", "rb") as caps:
-                    caps.seek(0)
-                    bot.send_document(
-                        message.chat.id,
-                        document=caps,
-                        reply_markup=main_keyboard(),
-                    )
-
-                bot.register_next_step_handler(message, main)
-        else:
-            come_back(message=message, message_text="Invalid command")
+        come_back(message, f"There isn't a file for number: {message.text},\nTotal {len(dict_vpns)} VPN files")
 
 
 def skip_menu(last_string: str, process: subprocess.Popen) -> None:
