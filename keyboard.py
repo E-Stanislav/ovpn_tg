@@ -5,9 +5,11 @@ def main_keyboard():
     button1 = "✅Create VPN"
     button2 = "📛Remove VPN"
     button3 = "📝Get VPN"
+    button4 = "💻System info"
     markup_main.row(button1)
     markup_main.row(button2)
     markup_main.row(button3)
+    markup_main.row(button4)
     return markup_main
 
 def delete_keyboard():

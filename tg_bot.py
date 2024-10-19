@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import time
+import psutil
 
 import telebot
 
@@ -63,6 +64,36 @@ def main(message):
             reply_markup=back_keyboard(),
         )
         bot.register_next_step_handler(message, get_protocol)
+    elif message.text == "💻System info" and message.chat.id in ADMIN_ID.keys():
+        bot.send_message(message.chat.id, "⌛Собирается информация о системе")
+        # Получаем информацию о памяти
+        used_memory = psutil.virtual_memory().used
+        # Получение информации о памяти
+        memory_info = psutil.virtual_memory().total
+        # Перевод в гигабайты
+        total_memory_gb = memory_info / (1024 ** 3)
+        # Загрузка процессора (в процентах) для всех vCPU
+        cpu_usage = psutil.cpu_percent(interval=1, percpu=True)
+        # Получаем информацию о всех дисковых разделах
+        disk_info = psutil.disk_partitions()[0]
+        # Получаем информацию об использовании диска
+        usage = psutil.disk_usage(disk_info.mountpoint)
+
+        # Общий объем памяти
+        total = usage.total / (1024 ** 3)  # Конвертация в ГБ
+        # Использовано
+        used = usage.used / (1024 ** 3)  # Конвертация в ГБ
+        # Процент использования
+        percent = usage.percent
+        # Печатаем информацию
+        summary = (
+            f"🧠Использовано ОЗУ: {used_memory / (1024 ** 3):.2f}/{total_memory_gb:.2f} GB\n"
+            f"🖥️Загрузка vCPU: {cpu_usage[0]}%\n"
+            f"💽Диск: {used:.2f}/{total:.2f} GB || {percent}%\n"
+        )
+
+
+        come_back(message=message, message_text=summary)
     else:
         come_back(message=message, message_text="🚫Access denied")
 
