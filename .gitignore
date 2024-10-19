@@ -2,6 +2,7 @@
 # Files #
 #########
 .env
+.ipynb
 
 ###########
 # Folders #
